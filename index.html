@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Vedic Panchang Dashboard — वैदिक पंचांग</title>
+  <meta charset="UTF-8">
+  <meta name="author" content="SidPro"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Interactive Vedic Panchang Dashboard with live Hora planetary clock, Tithi lunar angle calculator, Nakshatra tracker, monthly Hindu calendar grid, and six Ritu seasons. Understand how weekday names (Ravivar, Somvar, Mangalvar) are calculated from Hora, how Ekadashi and Purnima are 12° angular segments in space, and how the Panchang's five limbs — Tithi, Nakshatra, Yoga, Karana, Vara — form a celestial coordinate system. Built on principles from Surya Siddhanta and Jyotisha Vedanga. Vikram Samvat 2083.">
+  <meta name="keywords" content="vedic panchang, hindu calendar, hora clock, planetary hours, tithi calculator, nakshatra today, today panchang, aaj ka panchang, hindu panchang 2026, vikram samvat 2083">
+  <!-- icons -->
+  <link rel="apple-touch-icon" sizes="57x57" href="icons/favicon-57x57.png" />
+  <link rel="apple-touch-icon" sizes="60x60" href="icons/favicon-60x60.png" />
+  <link rel="apple-touch-icon" sizes="72x72" href="icons/favicon-72x72.png" />
+  <link rel="apple-touch-icon" sizes="76x76" href="icons/favicon-76x76.png" />
+  <link rel="apple-touch-icon" sizes="114x114" href="icons/favicon-114x114.png" />
+  <link rel="apple-touch-icon" sizes="120x120" href="icons/favicon-120x120.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/favicon-152x152.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/favicon-180x180.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="96x96" href="icons/favicon-96x96.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/favicon-192x192.png" />
+  <link rel="shortcut icon" type="image/x-icon" href="icons/favicon.ico" />
+  <link rel="icon" type="image/x-icon" href="icons/favicon.ico" />
+  <meta name="msapplication-TileColor" content="#ffffff" />
+  <meta name="msapplication-config" content="icons/browserconfig.xml" />
+  <link rel="manifest" href="icons/manifest.json" />
+  <!-- icons -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="dashboard">
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-title">Vedic Panchang</div>
+    <div class="header-hindi">वैदिक पंचांग — पाँच अंगों का दर्शन</div>
+    <div class="header-date" id="headerDate"></div>
+    <div class="date-picker-row">
+      <input type="date" id="datePicker" />
+      <button class="btn" onclick="goToDate()">Go</button>
+      <button class="btn" onclick="goToday()">Today</button>
+    </div>
+  </div>
+
+  <!-- HORA CLOCK -->
+  <div class="hora-section">
+    <div class="section-title">Hora Clock</div>
+    <div class="section-subtitle">होरा चक्र — Planetary hours from sunrise · Each hora ruled by a planet in cosmic sequence</div>
+    <div class="card">
+      <div class="hora-layout">
+        <div class="hora-clock-wrap">
+          <svg viewBox="0 0 420 420" id="horaClockSvg"></svg>
+        </div>
+        <div class="hora-info-panel">
+          <div class="hora-current-card">
+            <div class="hora-current-label">Current hora ruler</div>
+            <div class="hora-current-planet" id="horaCurrentPlanet">—</div>
+            <div class="hora-current-time" id="horaCurrentTime">—</div>
+          </div>
+          <div class="hora-current-card">
+            <div class="hora-current-label">Day ruler (sunrise hora)</div>
+            <div class="hora-current-planet" id="horaDayRuler">—</div>
+            <div class="hora-current-time" id="horaDayExplain">—</div>
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">24 Hora sequence (D = day, N = night)</div>
+            <div class="hora-sequence" id="horaSeqGrid"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANCHANG -->
+  <div class="panchang-section">
+    <div class="section-title">Panchang</div>
+    <div class="section-subtitle">पंचांग — The five limbs: Tithi · Nakshatra · Yoga · Karana · Vara</div>
+    <div class="panchang-grid" id="panchangGrid"></div>
+  </div>
+
+  <!-- CALENDAR -->
+  <div class="calendar-section">
+    <div class="section-title">Monthly Calendar</div>
+    <div class="section-subtitle">मासिक पंचांग — Tithi, Nakshatra & festivals for each day</div>
+    <div class="card">
+      <div class="cal-nav">
+        <button class="cal-nav-btn" onclick="calPrev()">◂</button>
+        <div class="cal-nav-title" id="calNavTitle"></div>
+        <button class="cal-nav-btn" onclick="calNext()">▸</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+  </div>
+
+  <!-- RITU SEASONS -->
+  <div class="ritu-section">
+    <div class="section-title">Ritu — Six Seasons</div>
+    <div class="section-subtitle">षड्ऋतु — India's six-fold seasonal cycle linked to solar movement & Ayurveda</div>
+    <div class="card">
+      <div class="ritu-timeline" id="rituTimeline"></div>
+      <div class="ritu-detail-card" id="rituDetail"></div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS — EDUCATIONAL SECTION -->
+  <div class="how-section">
+    <div class="section-title">How It All Works</div>
+    <div class="section-subtitle">गणित शास्त्र — The astronomical science behind every element of this dashboard</div>
+
+    <div class="how-tabs" id="howTabs">
+      <button class="how-tab active" onclick="showHow('hora')">Hora & Weekdays</button>
+      <button class="how-tab" onclick="showHow('tithi')">Tithi & Lunar Angles</button>
+      <button class="how-tab" onclick="showHow('nakshatra')">Nakshatra & Rashi</button>
+      <button class="how-tab" onclick="showHow('panchang')">Panchang (5 Limbs)</button>
+      <button class="how-tab" onclick="showHow('ritu')">Ritu & Seasons</button>
+      <button class="how-tab" onclick="showHow('samvat')">Vikram Samvat</button>
+    </div>
+
+    <div class="card">
+
+      <!-- ===== HORA & WEEKDAYS ===== -->
+      <div class="how-panel active" id="how-hora">
+        <div class="how-card">
+          <div class="how-heading" style="color:var(--sun)">Hora — The Origin of Weekday Names</div>
+          <div class="how-heading-hindi">होरा — सप्ताह के दिनों के नामों का मूल</div>
+          <div class="how-body">
+            <p><b>Ravivar, Somvar, Mangalvar</b> — these are not random names. They are <b class="gold">calculated</b> using an astrological clock called <b>Hora</b>, documented in texts like the <b>Surya Siddhanta</b> and <b>Brihat Parashara Hora Shastra</b>.</p>
+
+            <p><b>What is a Hora?</b><br>
+            In Vedic astrology, the time from one sunrise to the next sunrise is divided into <b>24 Hora</b> — meaning 24 planetary hours. But these hours are <b>not equal</b> like modern 60-minute hours. They are calculated by:</p>
+
+            <div class="formula-box">
+              <b>Day Hora Duration</b> = (Sunset Time − Sunrise Time) ÷ 12<br>
+              <b>Night Hora Duration</b> = (Next Sunrise − Sunset) ÷ 12<br><br>
+              Example: If sunrise = 6:26 AM and sunset = 6:37 PM<br>
+              Day duration = 12h 11m → Each day hora = ~61 minutes<br>
+              Night duration = 11h 49m → Each night hora = ~59 minutes
+            </div>
+
+            <p><b>The Cosmic Sequence</b><br>
+            Each hora is ruled by a specific planet. These planetary rulers follow a <b>fixed cosmic sequence</b> based on their orbital distance from Earth (as observed in geocentric astronomy):</p>
+
+            <div class="planet-chain" id="howPlanetChain"></div>
+
+            <p>This order keeps repeating, every single hour, without break.</p>
+
+            <p><b>The Most Important Rule — How Weekdays Are Named:</b><br>
+            The planet ruling the <b class="gold">first Hora at sunrise</b> decides the weekday name.</p>
+
+            <div class="step-grid">
+              <div class="step-num">1</div>
+              <div class="step-text">If sunrise starts with <b style="color:#e8963c">Sun hora</b>, the day becomes <b>Sunday (Ravivar / रविवार)</b>.</div>
+              <div class="step-num">2</div>
+              <div class="step-text">After 24 horas, the sequence has cycled. Since 24 ÷ 7 = 3 remainder 3, the next sunrise automatically shifts <b>3 planets ahead</b> in the cosmic sequence.</div>
+              <div class="step-num">3</div>
+              <div class="step-text">3 positions ahead of Sun → <b style="color:#8cb4d8">Moon</b>. So the next day is <b>Monday (Somvar / सोमवार)</b>.</div>
+              <div class="step-num">4</div>
+              <div class="step-text">3 positions ahead of Moon → <b style="color:#d45454">Mars</b>. So the next day is <b>Tuesday (Mangalvar / मंगलवार)</b>.</div>
+              <div class="step-num">5</div>
+              <div class="step-text">And the cycle continues — Mercury (Wednesday), Jupiter (Thursday), Venus (Friday), Saturn (Saturday).</div>
+            </div>
+
+            <p><b>The Mathematical Proof:</b></p>
+            <div class="formula-box">
+              Sequence: Saturn(0) → Jupiter(1) → Mars(2) → Sun(3) → Venus(4) → Mercury(5) → Moon(6)<br><br>
+              24 mod 7 = 3 → Each sunrise shifts +3 positions in the sequence<br><br>
+              Sun(3) → +3 = Moon(6) → +3 = Mars(2) → +3 = Mercury(5) → +3 = Jupiter(1) → +3 = Venus(4) → +3 = Saturn(0)<br>
+              Sunday → Monday → Tuesday → Wednesday → Thursday → Friday → Saturday
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <tr><th>Day</th><th>Hindi</th><th>Ruler</th><th>Ruler Hindi</th><th>1st Hora starts at</th><th>Energy</th></tr>
+                <tr><td>Sunday</td><td>रविवार</td><td style="color:#e8963c">Sun</td><td>सूर्य</td><td>Sunrise</td><td>Authority, vitality, self-expression</td></tr>
+                <tr><td>Monday</td><td>सोमवार</td><td style="color:#8cb4d8">Moon</td><td>चन्द्र</td><td>Sunrise</td><td>Mind, emotions, nurturing</td></tr>
+                <tr><td>Tuesday</td><td>मंगलवार</td><td style="color:#d45454">Mars</td><td>मंगल</td><td>Sunrise</td><td>Courage, action, energy</td></tr>
+                <tr><td>Wednesday</td><td>बुधवार</td><td style="color:#6bb86b">Mercury</td><td>बुध</td><td>Sunrise</td><td>Intellect, communication, trade</td></tr>
+                <tr><td>Thursday</td><td>गुरुवार</td><td style="color:#d4a844">Jupiter</td><td>गुरु</td><td>Sunrise</td><td>Wisdom, expansion, teaching</td></tr>
+                <tr><td>Friday</td><td>शुक्रवार</td><td style="color:#c488d4">Venus</td><td>शुक्र</td><td>Sunrise</td><td>Love, beauty, creativity</td></tr>
+                <tr><td>Saturday</td><td>शनिवार</td><td style="color:#7888a4">Saturn</td><td>शनि</td><td>Sunrise</td><td>Discipline, endurance, karma</td></tr>
+              </table>
+            </div>
+
+            <p>Each planet carries different <b>energy and vibration</b>. So the planet ruling sunrise influences the overall energy of that day. This is why <b>Shanivar</b> (Saturn's day) is associated with discipline and austerity, while <b>Shukravar</b> (Venus's day) is associated with beauty and devotion.</p>
+
+            <p>Next time you hear the name of a weekday — remember: <b class="gold">it was calculated thousands of years ago using planetary time science</b>.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== TITHI & LUNAR ANGLES ===== -->
+      <div class="how-panel" id="how-tithi">
+        <div class="how-card">
+          <div class="how-heading" style="color:var(--moon)">Tithi — Angles in Space, Not Dates</div>
+          <div class="how-heading-hindi">तिथि — अंतरिक्ष में कोण, तारीखें नहीं</div>
+          <div class="how-body">
+            <p><b>Ekadashi, Ashtami, Purnima</b> — these are <b>not dates</b>. They are <b class="gold">angles in space</b>. And once you understand this, Indian calendars start looking more scientific than modern ones.</p>
+
+            <p><b>The Core Geometry:</b><br>
+            The Moon completes a 360° revolution around the Earth in one lunar cycle (~29.5 days). Ancient astronomers mapped this movement with extraordinary precision. They noticed that from one New Moon to the next, the Moon covers 360°.</p>
+
+            <div class="formula-box">
+              <b>360° ÷ 30 parts = 12° per part</b><br><br>
+              Each 12° segment is called a <b>Tithi</b>.<br>
+              Tithi = Angular distance between the Sun and the Moon.<br><br>
+              Every 12° shift in the Sun-Moon angle creates a new tithi.
+            </div>
+
+            <p><b>The 30 Tithis — Pure Angular Geometry:</b></p>
+
+            <div class="table-wrap">
+              <table>
+                <tr><th>Angle</th><th>Tithi</th><th>Name</th><th>Hindi</th><th>Significance</th></tr>
+                <tr class="highlight-row"><td>0°</td><td>—</td><td>Amavasya</td><td>अमावस्या</td><td>New Moon — Sun & Moon aligned</td></tr>
+                <tr><td>12°</td><td>S1</td><td>Pratipada</td><td>प्रतिपदा</td><td>First sliver of waxing moon</td></tr>
+                <tr><td>24°</td><td>S2</td><td>Dwitiya</td><td>द्वितीया</td><td>—</td></tr>
+                <tr><td>36°</td><td>S3</td><td>Tritiya</td><td>तृतीया</td><td>—</td></tr>
+                <tr style="color:var(--critical)"><td>48°</td><td>S4</td><td>Chaturthi</td><td>चतुर्थी</td><td>⚠ Critical tithi</td></tr>
+                <tr><td>60°</td><td>S5</td><td>Panchami</td><td>पंचमी</td><td>—</td></tr>
+                <tr><td>72°</td><td>S6</td><td>Shashthi</td><td>षष्ठी</td><td>—</td></tr>
+                <tr><td>84°</td><td>S7</td><td>Saptami</td><td>सप्तमी</td><td>—</td></tr>
+                <tr style="color:var(--critical)"><td>96°</td><td>S8</td><td>Ashtami</td><td>अष्टमी</td><td>⚠ Critical — near quadrature (90°)</td></tr>
+                <tr><td>108°</td><td>S9</td><td>Navami</td><td>नवमी</td><td>—</td></tr>
+                <tr><td>120°</td><td>S10</td><td>Dashami</td><td>दशमी</td><td>—</td></tr>
+                <tr style="color:var(--critical)"><td>132°</td><td>S11</td><td>Ekadashi</td><td>एकादशी</td><td>⚠ Critical tithi — fasting prescribed</td></tr>
+                <tr><td>144°</td><td>S12</td><td>Dwadashi</td><td>द्वादशी</td><td>—</td></tr>
+                <tr style="color:var(--critical)"><td>156°</td><td>S13</td><td>Trayodashi</td><td>त्रयोदशी</td><td>⚠ Critical tithi</td></tr>
+                <tr><td>168°</td><td>S14</td><td>Chaturdashi</td><td>चतुर्दशी</td><td>—</td></tr>
+                <tr class="highlight-row"><td>180°</td><td>S15</td><td>Purnima</td><td>पूर्णिमा</td><td>Full Moon — Sun & Moon exactly opposite</td></tr>
+              </table>
+            </div>
+
+            <p>After Purnima (180°), the <b>Krishna Paksha</b> (waning phase) begins. The same 15 tithi names repeat from 192° to 360°, completing the cycle back to Amavasya.</p>
+
+            <p><b>Two Pakshas — Two Halves of the Circle:</b></p>
+            <div class="formula-box">
+              <b>Shukla Paksha</b> (शुक्ल पक्ष) = Waxing phase = 0° → 180° = Amavasya to Purnima<br>
+              <b>Krishna Paksha</b> (कृष्ण पक्ष) = Waning phase = 180° → 360° = Purnima back to Amavasya
+            </div>
+
+            <p><b>Critical Tithis — Resonance Points:</b><br>
+            Ancient science observed that some lunar angles create instability — similar to <b>resonance in physics</b>. These tithis include:</p>
+
+            <div class="example-row">
+              <div class="example-label">Chaturthi (48°/228°)</div>
+              <div class="example-val">Angular tension — early deviation from alignment</div>
+              <div class="example-label">Ashtami (96°/276°)</div>
+              <div class="example-val">Near quadrature — Sun & Moon at ~90°, gravitational vectors cross</div>
+              <div class="example-label">Ekadashi (132°/312°)</div>
+              <div class="example-val">Approaching opposition/conjunction — bodies accelerating toward peak</div>
+              <div class="example-label">Trayodashi (156°/336°)</div>
+              <div class="example-val">Pre-peak tension — 24° before Purnima/Amavasya</div>
+            </div>
+
+            <p>That's why <b>fasting, silence, and restraint</b> were prescribed on these days — <b class="gold">not as rituals, but as biological precautions</b>. Tithi is not religion. It is astronomy influencing physiology. The body reacts to these angular positions because gravitational and electromagnetic influences of the Sun-Moon system change measurably at these points.</p>
+
+            <p><b>How This Dashboard Calculates Tithi:</b></p>
+            <div class="formula-box">
+              1. Compute Sun's sidereal longitude (using orbital mechanics + Lahiri Ayanamsa correction)<br>
+              2. Compute Moon's sidereal longitude (including major perturbation terms)<br>
+              3. Angular difference = (Moon longitude − Sun longitude) mod 360°<br>
+              4. Tithi number = floor(angular difference ÷ 12°) + 1<br>
+              5. Tithi 1–15 = Shukla Paksha · Tithi 16–30 = Krishna Paksha
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== NAKSHATRA & RASHI ===== -->
+      <div class="how-panel" id="how-nakshatra">
+        <div class="how-card">
+          <div class="how-heading" style="color:var(--jupiter)">Nakshatra & Rashi — The Moon's Address in the Sky</div>
+          <div class="how-heading-hindi">नक्षत्र एवं राशि — चन्द्रमा का आकाशीय पता</div>
+          <div class="how-body">
+            <p>While Tithi measures the <b>angle between</b> Sun and Moon, <b>Nakshatra</b> and <b>Rashi</b> measure <b>where the Moon actually sits</b> in the sky against the backdrop of fixed stars.</p>
+
+            <p><b>Nakshatra — 27 Lunar Mansions:</b><br>
+            The ancient astronomers divided the entire 360° ecliptic (the path the Moon travels) into <b>27 equal segments</b>:</p>
+
+            <div class="formula-box">
+              <b>360° ÷ 27 = 13°20' per Nakshatra</b><br><br>
+              Each Nakshatra is a "lunar mansion" — a specific arc of the sky identified by a prominent star or star group within it.<br><br>
+              The Moon spends approximately 1 day in each Nakshatra (27 Nakshatras × ~1 day ≈ 27.3 days, the sidereal month).
+            </div>
+
+            <p>The 27 Nakshatras beginning from 0° Aries (Mesha) are: <b>Ashwini</b> (0°–13°20'), <b>Bharani</b> (13°20'–26°40'), <b>Krittika</b> (26°40'–40°), and so on through to <b>Revati</b> (346°40'–360°).</p>
+
+            <p>Each Nakshatra has a <b>ruling deity</b>, a <b>planetary lord</b>, and specific <b>qualities</b> that influence the day. For example, <b>Pushya</b> (ruled by Saturn, deity Brihaspati) is considered extremely auspicious for new ventures.</p>
+
+            <p><b>Rashi — 12 Zodiac Signs:</b><br>
+            The same 360° ecliptic is also divided into <b>12 equal signs of 30° each</b>:</p>
+
+            <div class="formula-box">
+              <b>360° ÷ 12 = 30° per Rashi</b><br><br>
+              Mesha (Aries) 0°–30° · Vrishabha (Taurus) 30°–60° · Mithuna (Gemini) 60°–90°<br>
+              Karka (Cancer) 90°–120° · Simha (Leo) 120°–150° · Kanya (Virgo) 150°–180°<br>
+              Tula (Libra) 180°–210° · Vrischika (Scorpio) 210°–240° · Dhanu (Sagittarius) 240°–270°<br>
+              Makara (Capricorn) 270°–300° · Kumbha (Aquarius) 300°–330° · Meena (Pisces) 330°–360°
+            </div>
+
+            <p><b>Relationship between Nakshatra and Rashi:</b><br>
+            Each Rashi (30°) contains exactly <b>2.25 Nakshatras</b> (30° ÷ 13°20' = 2.25). This creates the beautiful interlocking system you see in the Panchang — the Moon's Rashi tells you its broad zodiac zone, while its Nakshatra gives you a much finer position (4× more precise).</p>
+
+            <p><b>How This Dashboard Calculates Them:</b></p>
+            <div class="formula-box">
+              1. Compute Moon's sidereal longitude (degrees from 0° Aries)<br>
+              2. Nakshatra index = floor(Moon longitude ÷ 13.333°) → gives 0–26 (27 Nakshatras)<br>
+              3. Rashi index = floor(Moon longitude ÷ 30°) → gives 0–11 (12 Rashis)<br>
+              4. The Moon moves ~13° per day, so it changes Nakshatra roughly daily and Rashi every ~2.3 days
+            </div>
+
+            <p><b>Ganda Mool Nakshatras:</b> Six specific Nakshatras (Ashwini, Ashlesha, Magha, Jyeshta, Moola, Revati) fall at the junction points of water and fire Rashis. These junctions are considered sensitive — births during Ganda Mool periods traditionally call for special observances.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PANCHANG (5 LIMBS) ===== -->
+      <div class="how-panel" id="how-panchang">
+        <div class="how-card">
+          <div class="how-heading" style="color:var(--venus)">Panchang — Five Simultaneous Measurements</div>
+          <div class="how-heading-hindi">पंचांग — पाँच अंग (तिथि, नक्षत्र, योग, करण, वार)</div>
+          <div class="how-body">
+            <p>The word <b>Panchang</b> comes from Sanskrit: <b>Pancha</b> (पंच = five) + <b>Anga</b> (अंग = limb). It is a system of <b>five simultaneous astronomical measurements</b> taken at any moment, together capturing the complete celestial state.</p>
+
+            <p>Think of it as a <b>five-dimensional coordinate system</b> for time:</p>
+
+            <div class="step-grid">
+              <div class="step-num">1</div>
+              <div class="step-text"><b>Tithi</b> (तिथि) — <b>Sun-Moon angular distance</b>. Measures the Moon's phase angle relative to the Sun. 30 tithis of 12° each. Determines lunar days, fasting dates, and festival timing. <i>This is the angle between two bodies.</i></div>
+              <div class="step-num">2</div>
+              <div class="step-text"><b>Nakshatra</b> (नक्षत्र) — <b>Moon's absolute stellar position</b>. Which of 27 lunar mansions (each 13°20') the Moon occupies against the fixed star background. <i>This is the Moon's address in space.</i></div>
+              <div class="step-num">3</div>
+              <div class="step-text"><b>Yoga</b> (योग) — <b>Sum of Sun + Moon longitudes</b>. 27 yogas of 13°20' each. Measures the combined luni-solar energy. When both luminaries are in specific combined positions, the day takes on particular qualities. <i>This is the joint energy signature.</i></div>
+              <div class="step-num">4</div>
+              <div class="step-text"><b>Karana</b> (करण) — <b>Half of a Tithi</b>. Each tithi (12°) is split into two karanas (6° each), giving 60 karanas per lunar month. 11 named karanas cycle through. <i>This is a finer sub-division of the lunar angle.</i></div>
+              <div class="step-num">5</div>
+              <div class="step-text"><b>Vara</b> (वार) — <b>Weekday from Hora ruler</b>. The planet ruling the first hora at sunrise gives the day its name and dominant planetary energy. <i>This is the solar-planetary clock.</i></div>
+            </div>
+
+            <div class="formula-box">
+              <b>Yoga Calculation:</b><br>
+              Yoga = floor((Sun longitude + Moon longitude) mod 360° ÷ 13.333°)<br><br>
+              <b>Karana Calculation:</b><br>
+              Karana = floor(Sun-Moon angular difference ÷ 6°)<br>
+              Two karanas per tithi · 60 karanas per lunar month · 11 named types cycling
+            </div>
+
+            <p>Every single cell in a Hindu calendar like the one on Prokerala encodes all five of these measurements. The calendar you saw showing "K 5 Panchami, H 19, IN 17, ☆ Swati, ☾ Tula" is simultaneously telling you: the tithi (Panchami = 60° Sun-Moon angle, Krishna Paksha), the Nakshatra (Swati = Moon in the 15th lunar mansion), the Rashi (Tula = Moon in Libra), plus the Hijri and Indian Civil calendar dates — all for the same moment.</p>
+
+            <p><b class="gold">This is not a religious calendar. It is a multi-axis astronomical coordinate system for tracking time through celestial mechanics.</b></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== RITU & SEASONS ===== -->
+      <div class="how-panel" id="how-ritu">
+        <div class="how-card">
+          <div class="how-heading" style="color:var(--mercury)">Ritu — Six Seasons from Solar Geometry</div>
+          <div class="how-heading-hindi">षड्ऋतु — सूर्य की गति से छह ऋतुएँ</div>
+          <div class="how-body">
+            <p>While most of the world uses <b>4 seasons</b>, the Vedic system recognizes <b>6 Ritus</b> — a more precise division based on the Sun's movement through zodiac pairs. This system was already documented during the <b>Vedic period</b> in the Jyotisha Vedanga.</p>
+
+            <p><b>The Astronomy:</b><br>
+            As the Earth orbits the Sun, the Sun appears to move through the 12 Rashis (zodiac signs) over a year. The six Ritus are defined by <b>pairing adjacent Rashis</b>:</p>
+
+            <div class="table-wrap">
+              <table>
+                <tr><th>Ritu</th><th>Hindi</th><th>English</th><th>Zodiac Pair</th><th>Months</th><th>Anchored To</th></tr>
+                <tr><td style="color:#5a7a9a">Shishira</td><td>शिशिर</td><td>Late Winter</td><td>Makara + Kumbha</td><td>Magha–Phalguna</td><td>Starts at Winter Solstice (Uttarayana)</td></tr>
+                <tr><td style="color:#7cb87c">Vasanta</td><td>वसन्त</td><td>Spring</td><td>Meena + Mesha</td><td>Chaitra–Vaisakha</td><td>Vernal Equinox at midpoint</td></tr>
+                <tr><td style="color:#d4944c">Grishma</td><td>ग्रीष्म</td><td>Summer</td><td>Vrishabha + Mithuna</td><td>Jyaistha–Asadha</td><td>Ends at Summer Solstice (Dakshinayana)</td></tr>
+                <tr><td style="color:#4a8cb8">Varsha</td><td>वर्षा</td><td>Monsoon</td><td>Karka + Simha</td><td>Shravana–Bhadra</td><td>Starts at Summer Solstice</td></tr>
+                <tr><td style="color:#c4884c">Sharada</td><td>शरद</td><td>Autumn</td><td>Kanya + Tula</td><td>Ashvina–Kartika</td><td>Autumnal Equinox at midpoint</td></tr>
+                <tr><td style="color:#8a7a9a">Hemanta</td><td>हेमन्त</td><td>Early Winter</td><td>Vrischika + Dhanu</td><td>Agrahayana–Pausha</td><td>Ends at Winter Solstice</td></tr>
+              </table>
+            </div>
+
+            <p><b>Key Astronomical Anchors:</b></p>
+            <div class="formula-box">
+              <b>Uttarayana</b> (Winter Solstice, ~Dec 22) → Sun begins northward journey → Shishira begins<br>
+              <b>Vasant Vishuva</b> (Vernal Equinox, ~Mar 20) → Equal day/night → Midpoint of Vasanta<br>
+              <b>Dakshinayana</b> (Summer Solstice, ~Jun 21) → Sun begins southward journey → Varsha begins<br>
+              <b>Sharad Vishuva</b> (Autumnal Equinox, ~Sep 22) → Equal day/night → Midpoint of Sharada
+            </div>
+
+            <p><b>Ayurvedic Connection (Ritucharya):</b><br>
+            Each Ritu has a specific <b>Ritucharya</b> — a seasonal regimen prescribed in Ayurveda (documented in <b>Charaka Samhita</b> and <b>Sushruta Samhita</b>). This isn't folklore — it's a systematic approach connecting solar geometry to:</p>
+
+            <div class="example-row">
+              <div class="example-label">Dosha cycles</div>
+              <div class="example-val">Kapha accumulates in Shishira, liquefies in Vasanta. Pitta peaks in Sharada. Vata rises in Varsha.</div>
+              <div class="example-label">Digestive fire (Agni)</div>
+              <div class="example-val">Strongest in Hemanta/Shishira (cold compresses heat inward), weakest in Varsha (humidity).</div>
+              <div class="example-label">Diet</div>
+              <div class="example-val">Heavy/warm in winter, light/bitter in spring, sweet/cold in summer, sour/warm in monsoon.</div>
+              <div class="example-label">Agriculture</div>
+              <div class="example-val">Rabi sowing (Hemanta) → Rabi harvest (Vasanta) → Kharif sowing (Varsha) → Kharif harvest (Sharada).</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== VIKRAM SAMVAT ===== -->
+      <div class="how-panel" id="how-samvat">
+        <div class="how-card">
+          <div class="how-heading" style="color:var(--gold)">Vikram Samvat — The Living Calendar</div>
+          <div class="how-heading-hindi">विक्रम संवत् — भारत का सजीव कालगणना तंत्र</div>
+          <div class="how-body">
+            <p>The <b>Vikram Samvat</b> is the traditional Hindu calendar era, believed to have been founded by Emperor <b>Vikramaditya</b> in 57 BCE. The current year is <b>Vikram Samvat 2083</b> (2026 CE), making it one of the oldest continuously-used calendar systems in the world.</p>
+
+            <div class="formula-box">
+              <b>Vikram Samvat = Gregorian Year + 57</b> (approximately)<br><br>
+              More precisely: The new year begins at Chaitra Shukla Pratipada (the first day of waxing moon in Chaitra month), which typically falls in March/April. Before this date, the Samvat year is Gregorian + 56; after it, Gregorian + 57.
+            </div>
+
+            <p><b>Why Chaitra Shukla Pratipada?</b><br>
+            This is not arbitrary. It marks the first sunrise after <b>Amavasya in Chaitra</b> — the moment when the Sun-Moon angle passes 0° and the first sliver of the new crescent becomes visible. This is celebrated as <b>Gudi Padwa</b> (Maharashtra), <b>Ugadi</b> (Karnataka/Andhra), and <b>Nav Samvatsar</b> across North India.</p>
+
+            <p><b>Luni-Solar Calibration:</b><br>
+            The Hindu calendar is <b>luni-solar</b> — months follow the Moon (synodic month ≈ 29.5 days), but the year stays aligned with the Sun (tropical year ≈ 365.25 days). This creates a mismatch:</p>
+
+            <div class="formula-box">
+              12 lunar months = 12 × 29.5 = 354 days<br>
+              1 solar year = 365.25 days<br>
+              Deficit = ~11 days per year<br><br>
+              Solution: Every ~2.7 years, an <b>Adhik Mas</b> (intercalary month) is inserted.<br>
+              This keeps festivals like Holi, Diwali, and Navratri in their correct seasons — unlike a pure lunar calendar (e.g., Islamic) where months drift through seasons over a 33-year cycle.
+            </div>
+
+            <p><b>The 12 Hindu Months:</b><br>
+            Each month runs from one <b>Purnima to the next</b> (Purnimant system, used in North India) or one <b>Amavasya to the next</b> (Amant system, used in South/West India). The months are named after the Nakshatra in which the Full Moon falls:</p>
+
+            <div class="example-row">
+              <div class="example-label">Chaitra</div><div class="example-val">Full Moon near Chitra Nakshatra (Mar–Apr)</div>
+              <div class="example-label">Vaisakha</div><div class="example-val">Full Moon near Vishaka Nakshatra (Apr–May)</div>
+              <div class="example-label">Jyaistha</div><div class="example-val">Full Moon near Jyeshta Nakshatra (May–Jun)</div>
+              <div class="example-label">Asadha</div><div class="example-val">Full Moon near Purva/Uttara Ashadha (Jun–Jul)</div>
+              <div class="example-label">Shravana</div><div class="example-val">Full Moon near Shravana Nakshatra (Jul–Aug)</div>
+              <div class="example-label">Bhadra</div><div class="example-val">Full Moon near Purva/Uttara Bhadrapada (Aug–Sep)</div>
+              <div class="example-label">Ashvina</div><div class="example-val">Full Moon near Ashwini Nakshatra (Sep–Oct)</div>
+              <div class="example-label">Kartika</div><div class="example-val">Full Moon near Krittika Nakshatra (Oct–Nov)</div>
+              <div class="example-label">Agrahayana</div><div class="example-val">Full Moon near Mrigashirsha Nakshatra (Nov–Dec)</div>
+              <div class="example-label">Pausha</div><div class="example-val">Full Moon near Pushya Nakshatra (Dec–Jan)</div>
+              <div class="example-label">Magha</div><div class="example-val">Full Moon near Magha Nakshatra (Jan–Feb)</div>
+              <div class="example-label">Phalguna</div><div class="example-val">Full Moon near Purva/Uttara Phalguni (Feb–Mar)</div>
+            </div>
+
+            <p>This is why the Prokerala calendar you saw shows <b>"Phalguna 2082 – Chaitra 2083"</b> for March 2026 — the month of March straddles the end of one Hindu month and the beginning of another, with the Hindu new year falling on March 19.</p>
+
+            <p><b class="gold">The Vikram Samvat is not just a dating system — it is a living astronomical framework that synchronizes lunar phases, solar seasons, stellar positions, and planetary hours into a single coherent system of timekeeping.</b></p>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /card -->
+  </div>
+
+  <!-- FOOTER -->
+  <div class="info-footer">
+    <div class="footer-title">ज्योतिष शास्त्र — The Science of Light</div>
+    <p>This dashboard computes planetary hours (Hora), lunar angular geometry (Tithi), stellar positions (Nakshatra), and seasonal cycles (Ritu) using astronomical algorithms rooted in the Surya Siddhanta and Jyotisha Vedanga traditions. All calculations are approximate (client-side spherical astronomy) and intended for educational understanding of Vedic timekeeping science.</p>
+    <p style="margin-top:10px;font-size:11px">Location: Hubballi, Karnataka (15.36°N, 75.12°E) · Ayanamsa: Lahiri (approximate)</p>
+    <p>&copy; Copyright 2020-<script>document.write(new Date().getFullYear())</script> by <a href="https://collegeek.com/"><b><span class="footer-brand">C</span>ollegeek</b></a>. All Rights Reserved.</p>
+  </div>
+</div>
+<script src="vedic.js"></script>
+</body>
+</html>

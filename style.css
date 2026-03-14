@@ -1,0 +1,659 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
+
+:root {
+  --bg-deep: #0a0a0f;
+  --bg-card: #111118;
+  --bg-card-hover: #16161f;
+  --bg-surface: #1a1a24;
+  --border: rgba(255,255,255,0.06);
+  --border-active: rgba(255,255,255,0.15);
+  --text-primary: #e8e6e0;
+  --text-secondary: rgba(232,230,224,0.55);
+  --text-tertiary: rgba(232,230,224,0.3);
+  --gold: #c9a84c;
+  --gold-dim: rgba(201,168,76,0.15);
+  --gold-glow: rgba(201,168,76,0.3);
+  --sun: #e8963c;
+  --moon: #8cb4d8;
+  --mars: #d45454;
+  --mercury: #6bb86b;
+  --jupiter: #d4a844;
+  --venus: #c488d4;
+  --saturn: #7888a4;
+  --rahu: #555;
+  --shukla: rgba(140,180,216,0.12);
+  --krishna: rgba(120,100,180,0.12);
+  --critical: #d45454;
+  --festival: #4caf50;
+  --font-body: 'DM Sans', sans-serif;
+  --font-display: 'Cormorant Garamond', serif;
+  --font-hindi: 'Noto Sans Devanagari', sans-serif;
+  --radius: 10px;
+  --radius-lg: 16px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-active); border-radius: 3px; }
+
+/* Layout */
+.dashboard {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  padding: 40px 20px 32px;
+  position: relative;
+}
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 120px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.header-title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 5vw, 44px);
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 1px;
+}
+.header-hindi {
+  font-family: var(--font-hindi);
+  font-size: clamp(14px, 2.5vw, 18px);
+  color: var(--text-secondary);
+  margin-top: 4px;
+  font-weight: 400;
+}
+.header-date {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  margin-top: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.date-picker-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+.date-picker-row input[type="date"] {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  outline: none;
+}
+.date-picker-row input[type="date"]:focus { border-color: var(--gold-dim); }
+.date-picker-row input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
+.btn {
+  background: var(--gold-dim);
+  border: 1px solid rgba(201,168,76,0.25);
+  color: var(--gold);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px 18px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+}
+.btn:hover { background: var(--gold-glow); }
+.btn:active { transform: scale(0.97); }
+
+/* Section Titles */
+.section-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+.section-subtitle {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-bottom: 16px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* Cards */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  transition: border-color 0.2s;
+}
+.card:hover { border-color: var(--border-active); }
+
+/* Grid */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+
+/* ========== HORA CLOCK ========== */
+.hora-section { margin-bottom: 32px; }
+.hora-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+.hora-clock-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.hora-clock-wrap svg { width: 100%; max-width: 420px; }
+.hora-info-panel { display: flex; flex-direction: column; gap: 12px; }
+.hora-current-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.hora-current-label {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.hora-current-planet {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+.hora-current-time {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+.hora-sequence {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+}
+.hora-seq-cell {
+  text-align: center;
+  padding: 6px 2px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 500;
+  border: 1px solid transparent;
+  transition: all 0.15s;
+  cursor: default;
+}
+.hora-seq-cell.active {
+  border-color: var(--gold);
+  box-shadow: 0 0 8px var(--gold-dim);
+}
+.hora-seq-cell .seq-num {
+  font-size: 8px;
+  opacity: 0.5;
+  display: block;
+}
+
+/* ========== PANCHANG ========== */
+.panchang-section { margin-bottom: 32px; }
+.panchang-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+.panch-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  position: relative;
+  overflow: hidden;
+}
+.panch-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  border-radius: 3px 0 0 3px;
+}
+.panch-card[data-type="tithi"]::before { background: var(--moon); }
+.panch-card[data-type="nakshatra"]::before { background: var(--jupiter); }
+.panch-card[data-type="yoga"]::before { background: var(--venus); }
+.panch-card[data-type="karana"]::before { background: var(--mars); }
+.panch-card[data-type="vara"]::before { background: var(--sun); }
+.panch-card[data-type="rashi"]::before { background: var(--mercury); }
+.panch-label {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.panch-value {
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+.panch-hindi {
+  font-family: var(--font-hindi);
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 1px;
+}
+.panch-detail {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+.angle-bar {
+  height: 4px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 2px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+.angle-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+.critical-badge {
+  display: inline-block;
+  background: rgba(212,84,84,0.15);
+  color: var(--critical);
+  font-size: 9px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ========== CALENDAR GRID ========== */
+.calendar-section { margin-bottom: 32px; }
+.cal-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.cal-nav-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+}
+.cal-nav-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;align-items:center;justify-content:center;
+  transition: all 0.15s;
+}
+.cal-nav-btn:hover { border-color: var(--border-active); color: var(--text-primary); }
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+.cal-header {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  padding: 8px 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.cal-header .hindi {
+  font-family: var(--font-hindi);
+  font-size: 10px;
+  display: block;
+  margin-top: 1px;
+  opacity: 0.6;
+}
+.cal-cell {
+  background: var(--bg-surface);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 6px;
+  min-height: 82px;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+  font-size: 10px;
+}
+.cal-cell:hover { border-color: var(--border-active); background: var(--bg-card-hover); }
+.cal-cell.today { border-color: var(--gold); box-shadow: 0 0 12px var(--gold-dim); }
+.cal-cell.selected { border-color: var(--gold); background: var(--gold-dim); }
+.cal-cell.empty { background: transparent; cursor: default; min-height: 0; }
+.cal-cell.empty:hover { background: transparent; border-color: transparent; }
+.cal-cell.critical { border-left: 2.5px solid var(--critical); }
+.cal-cell.festival { border-left: 2.5px solid var(--festival); }
+.cal-gdate { font-size: 14px; font-weight: 600; }
+.cal-hdate {
+  font-family: var(--font-hindi);
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+.cal-tithi {
+  display: inline-block;
+  font-size: 8px;
+  font-weight: 600;
+  padding: 1px 4px;
+  border-radius: 3px;
+  margin-top: 3px;
+  letter-spacing: 0.3px;
+}
+.cal-tithi.shukla { background: var(--shukla); color: var(--moon); }
+.cal-tithi.krishna { background: var(--krishna); color: #9988cc; }
+.cal-nak {
+  font-size: 8px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cal-fest-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--festival);
+  position: absolute;
+  top: 6px; right: 6px;
+}
+
+/* ========== RITU SEASONS ========== */
+.ritu-section { margin-bottom: 32px; }
+.ritu-timeline {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  position: relative;
+}
+.ritu-block {
+  flex: 1;
+  padding: 12px 10px;
+  border-radius: var(--radius);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+  position: relative;
+}
+.ritu-block:hover { transform: translateY(-2px); }
+.ritu-block.active {
+  border-color: var(--gold);
+  box-shadow: 0 4px 20px var(--gold-dim);
+}
+.ritu-name {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+}
+.ritu-hindi {
+  font-family: var(--font-hindi);
+  font-size: 10px;
+  opacity: 0.7;
+  margin-top: 1px;
+}
+.ritu-months {
+  font-size: 9px;
+  opacity: 0.5;
+  margin-top: 3px;
+}
+.ritu-detail-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+.ritu-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 12px;
+}
+.ritu-detail-item .ritu-d-label {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.ritu-detail-item .ritu-d-value {
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 2px;
+}
+.ritu-detail-item .ritu-d-sub {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+  line-height: 1.5;
+}
+
+/* ========== HOW IT WORKS SECTION ========== */
+.how-section { margin-bottom: 32px; }
+.how-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.how-tab {
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  transition: all 0.15s;
+}
+.how-tab:hover { background: var(--bg-card-hover); }
+.how-tab.active {
+  background: var(--gold-dim);
+  border-color: rgba(201,168,76,0.25);
+  color: var(--gold);
+}
+.how-panel {
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+.how-panel.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.how-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px 28px;
+}
+.how-heading {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.how-heading-hindi {
+  font-family: var(--font-hindi);
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+.how-body {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.85;
+}
+.how-body p { margin-bottom: 14px; }
+.how-body strong, .how-body b { color: var(--text-primary); font-weight: 600; }
+.how-body .gold { color: var(--gold); }
+.how-body .formula-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gold);
+  border-radius: 6px;
+  padding: 14px 18px;
+  margin: 14px 0;
+  font-family: 'DM Sans', monospace;
+  font-size: 13px;
+  color: var(--text-primary);
+  line-height: 1.8;
+}
+.how-body .example-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 16px;
+  margin: 12px 0;
+  font-size: 13px;
+}
+.how-body .example-label {
+  color: var(--gold);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.how-body .example-val { color: var(--text-secondary); }
+.how-body .step-grid {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 6px 14px;
+  margin: 16px 0;
+}
+.how-body .step-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--gold-dim);
+  color: var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+  flex-shrink: 0;
+}
+.how-body .step-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+  padding-top: 4px;
+  line-height: 1.7;
+}
+.how-body .planet-chain {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 10px 0;
+  align-items: center;
+}
+.how-body .planet-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid;
+}
+.how-body .arrow-sep {
+  color: var(--text-tertiary);
+  font-size: 14px;
+}
+.how-body .table-wrap {
+  overflow-x: auto;
+  margin: 14px 0;
+}
+.how-body table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.how-body table th {
+  text-align: left;
+  padding: 8px 10px;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border);
+}
+.how-body table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+.how-body table tr:hover td { background: var(--bg-card-hover); }
+.how-body .highlight-row td { color: var(--gold); font-weight: 500; }
+.how-body .diagram-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0;
+}
+.how-body .diagram-wrap svg { max-width: 100%; }
+
+/* ========== INFO FOOTER ========== */
+.info-footer {
+  text-align: center;
+  padding: 32px 20px;
+  border-top: 1px solid var(--border);
+  margin-top: 20px;
+}
+.info-footer p {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+.info-footer .footer-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .hora-layout { grid-template-columns: 1fr; }
+  .ritu-timeline { flex-wrap: wrap; }
+  .ritu-block { flex: 1 1 calc(33% - 6px); }
+}
+@media (max-width: 600px) {
+  .dashboard { padding: 12px 10px 40px; }
+  .panchang-grid { grid-template-columns: 1fr 1fr; }
+  .cal-cell { min-height: 68px; padding: 4px; }
+  .cal-gdate { font-size: 12px; }
+  .hora-sequence { grid-template-columns: repeat(4, 1fr); }
+  .ritu-block { flex: 1 1 calc(50% - 6px); }
+  .ritu-detail-grid { grid-template-columns: 1fr; }
+}
